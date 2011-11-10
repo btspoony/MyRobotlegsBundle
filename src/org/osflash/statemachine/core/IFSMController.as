@@ -1,4 +1,5 @@
 package org.osflash.statemachine.core {
+import org.osflash.signals.ISignal;
 
 	/**
 	 * The outward-facing contract between the StateMachine and the framework actors.
@@ -43,27 +44,8 @@ package org.osflash.statemachine.core {
 		function cancel( reason:String, payload:Object = null ):void;
 
 		/**
-		 * Adds a listener to the general <strong>changed</strong> phase of the transition.
-		 * @param listener the method to handle the phase
-		 * @return the listener Function passed as the parameter
+		 * return the general signal <strong>changed</strong> phase of the transition.
 		 */
-		function addChangedListener( listener:Function ):Function;
-
-		/**
-		 * Adds a listener to the general <strong>changed</strong> phase of the transition,
-		 * that is called once only, and then automagically removed.
-		 * @param listener the method to handle the phase
-		 * @return the listener Function passed as the parameter
-		 */
-		function addChangedListenerOnce( listener:Function ):Function;
-
-		/**
-		 * Removes the listener from the general <strong>changed</strong> phase of the transition.
-		 * @param listener the method to remove
-		 * @return the listener Function passed as the parameter
-		 */
-		function removeChangedListener( listener:Function ):Function;
-
-
+		function get changedSignal():ISignal;
 	}
 }

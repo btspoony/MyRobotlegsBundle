@@ -1,5 +1,5 @@
 package org.osflash.statemachine.core {
-import org.osflash.statemachine.transitioning.TransitionPhase;
+import org.osflash.signals.ISignal;
 
 /**
  * The inward-facing interface between the FSMController and the
@@ -15,17 +15,13 @@ public interface IFSMControllerOwner {
 
     /**
      * Allows the SignalTransitionController to listen to framework action requests.
-     * @param listener the method to handle the action request
-     * @return the listener Function passed as the parameter
      */
-    function addActionListener(listener:Function):Function;
+    function get actionSignal():ISignal;
 
     /**
      * Allows the SignalTransitionController to listen to framework cancel requests.
-     * @param listener the method to handle the cancel request
-     * @return the listener Function passed as the parameter
      */
-    function addCancelListener(listener:Function):Function;
+    function get cancelSignal():ISignal;
 
     /**
      * Dispatches the general <strong>changed</strong> phase to all framework
@@ -48,13 +44,13 @@ public interface IFSMControllerOwner {
 
     /**
      * Sets the current phase of the transition cycle
-     * @see TransitionPhases
+     * @see TransitionPhase
      */
     function setTransitionPhase(value:ITransitionPhase):void;
 
     /**
      * Sets the referring action of the transition cycle
-     * @see TransitionPhases
+     * @see TransitionPhase
      */
     function setReferringAction(value:String):void;
 

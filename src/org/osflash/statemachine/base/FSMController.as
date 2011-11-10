@@ -1,5 +1,5 @@
 package org.osflash.statemachine.base {
-	import org.osflash.signals.Signal;
+	import org.osflash.signals.ISignal;
 	import org.osflash.statemachine.core.IFSMController;
 	import org.osflash.statemachine.core.IFSMControllerOwner;
 import org.osflash.statemachine.core.IPayload;
@@ -21,17 +21,17 @@ import org.osflash.statemachine.transitioning.TransitionPhase;
 		/**
 		 * @private
 		 */
-		protected var _action:Signal;
+		protected var _action:ISignal;
 
 		/**
 		 * @private
 		 */
-		protected var _cancel:Signal;
+		protected var _cancel:ISignal;
 
 		/**
 		 * @private
 		 */
-		protected var _changed:Signal;
+		protected var _changed:ISignal;
 
 		/**
 		 * @private
@@ -145,7 +145,7 @@ import org.osflash.statemachine.transitioning.TransitionPhase;
 			if( isTransitioning ){
 				_cacheActionName = actionName;
 				_cachePayload = payload;
-				addChangedListenerOnce( dispatchActionLater );
+				_changed.addOnce( dispatchActionLater );
 			}
 			else _action.dispatch( actionName, payload );
 		}
@@ -193,36 +193,22 @@ import org.osflash.statemachine.transitioning.TransitionPhase;
 		/**
 		 * @inheritDoc
 		 */
-		public function addChangedListener( listener:Function ):Function{
-			return _changed.add( listener );
+		public function get changedSignal():ISignal{
+			return _changed;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public function addChangedListenerOnce( listener:Function ):Function{
-			return _changed.addOnce( listener );
+		public function get actionSignal():ISignal{
+			return _action;
 		}
 
 		/**
 		 * @inheritDoc
 		 */
-		public function removeChangedListener( listener:Function ):Function{
-			return _changed.remove( listener );
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function addActionListener( listener:Function ):Function{
-			return _action.add( listener );
-		}
-
-		/**
-		 * @inheritDoc
-		 */
-		public function addCancelListener( listener:Function ):Function{
-			return _cancel.add( listener );
+		public function get cancelSignal():ISignal{
+			return _cancel;
 		}
 
 		/**

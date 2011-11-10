@@ -25,8 +25,8 @@ package org.osflash.statemachine.transitioning {
 		public function SignalTransitionController( controller:IFSMControllerOwner = null, logger:ILoggable = null ){
 			super(logger);
 			_controller = controller || new FSMController();
-			_controller.addActionListener( handleAction );
-			_controller.addCancelListener( handleCancel );
+			_controller.actionSignal.add( handleAction );
+			_controller.cancelSignal.add( handleCancel );
 		}
 
 		/**

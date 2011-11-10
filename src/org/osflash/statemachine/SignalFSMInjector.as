@@ -5,9 +5,8 @@ package org.osflash.statemachine {
 	import org.osflash.statemachine.core.IStateMachine;
 	import org.osflash.statemachine.decoding.SignalXMLStateDecoder;
 	import org.osflash.statemachine.transitioning.SignalTransitionController;
-import org.robotlegs.core.IGuardedSignalCommandMap;
-import org.robotlegs.core.IInjector;
-	import org.robotlegs.core.ISignalCommandMap;
+	import org.robotlegs.core.IGuardedSignalCommandMap;
+	import org.robotlegs.core.IInjector;
 
 	/**
 	 * A helper class that wraps the injection of the Signal StateMachine
@@ -107,10 +106,6 @@ import org.robotlegs.core.IInjector;
 			// should be a resting one and the next state should be triggered by the
 			// onApplicationComplete event in the ApplicationMediator
 			_fsmInjector.inject( _stateMachine );
-
-
-
-
 		}
 
 		/**
