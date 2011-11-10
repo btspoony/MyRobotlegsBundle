@@ -1,21 +1,19 @@
 package org.robotlegs.base
 {
-    import flash.utils.Dictionary;
-    import flash.utils.Proxy;
-    import flash.utils.describeType;
-    import flash.utils.getDefinitionByName;
-    import flash.utils.getQualifiedClassName;
-    
-    import org.osflash.signals.*;
-    import org.robotlegs.core.IInjector;
-    import org.robotlegs.core.ISignalCommandMap;
+	import org.osflash.signals.ISignal;
+	import org.robotlegs.core.IInjector;
+	import org.robotlegs.core.ISignalCommandMap;
 
-    public class SignalCommandMap implements ISignalCommandMap
+	import flash.utils.Dictionary;
+	import flash.utils.describeType;
+
+	public class SignalCommandMap implements ISignalCommandMap
     {
         protected var injector:IInjector;
         protected var signalMap:Dictionary;
         protected var signalClassMap:Dictionary;
         protected var verifiedCommandClasses:Dictionary;
+        protected var detainedCommands:Dictionary;
 
         public function SignalCommandMap(injector:IInjector)
         {
@@ -23,6 +21,7 @@ package org.robotlegs.base
             signalMap = new Dictionary( false );
             signalClassMap = new Dictionary( false );
             verifiedCommandClasses = new Dictionary( false );
+            detainedCommands = new Dictionary( false );
         }
 
         public function mapSignal(signal:ISignal, commandClass:Class, oneShot:Boolean = false):void
@@ -30,8 +29,8 @@ package org.robotlegs.base
             verifyCommandClass( commandClass );
             if ( hasSignalCommand( signal, commandClass ) )
                 return;
-            var signalCommandMap:Dictionary = signalMap[signal] = signalMap[signal] || new Dictionary( false );
-            var callback:Function = function(a:* = null, b:* = null, c:* = null, d:* = null, e:* = null, f:* = null, g:* = null):void
+            const signalCommandMap:Dictionary = signalMap[signal] ||= new Dictionary( false );
+            const callback:Function = function():void
             {
                 routeSignalToCommand( signal, arguments, commandClass, oneShot );
             };
@@ -47,7 +46,7 @@ package org.robotlegs.base
             return signal;
         }
 
-        private function getSignalClassInstance(signalClass:Class):ISignal
+        protected function getSignalClassInstance(signalClass:Class):ISignal
         {
             return ISignal(signalClassMap[signalClass]) || createSignalClassInstance(signalClass);
         }
@@ -89,21 +88,29 @@ package org.robotlegs.base
 
         protected function routeSignalToCommand(signal:ISignal, valueObjects:Array, commandClass:Class, oneshot:Boolean):void
         {
-            createCommandInstance(signal.valueClasses, valueObjects, commandClass).execute();
-
+            mapSignalValues( signal.valueClasses, valueObjects );
+            createCommandInstance( commandClass).execute();
+            unmapSignalValues( signal.valueClasses, valueObjects );
             if ( oneshot )
                 unmapSignal( signal, commandClass );
         }
 
-        protected function createCommandInstance(valueClasses:Array, valueObjects:Array, commandClass:Class):Object
-        {
-			for (var i:uint=0;i<valueClasses.length;i++)
-			{
-				injector.mapValue(valueClasses[i], valueObjects[i]);
-			}
+        protected function createCommandInstance(commandClass:Class):Object {
             return injector.instantiate(commandClass);
         }
-        
+
+        protected function mapSignalValues(valueClasses:Array, valueObjects:Array):void {
+            for (var i:uint = 0; i < valueClasses.length; i++) {
+                injector.mapValue(valueClasses[i], valueObjects[i]);
+            }
+        }
+
+        protected function unmapSignalValues(valueClasses:Array, valueObjects:Array):void {
+            for (var i:uint = 0; i < valueClasses.length; i++) {
+                injector.unmap(valueClasses[i]);
+            }
+        }
+
         protected function verifyCommandClass(commandClass:Class):void
         {
             if ( verifiedCommandClasses[commandClass] ) return;
@@ -114,5 +121,15 @@ package org.robotlegs.base
 			verifiedCommandClasses[commandClass] = true;
         }
 		
+        public function detain(command:Object):void
+        {
+            detainedCommands[command] = true;
+        }
+
+        public function release(command:Object):void
+        {
+            if (detainedCommands[command])
+                delete detainedCommands[command];
+        }
     }
 }
