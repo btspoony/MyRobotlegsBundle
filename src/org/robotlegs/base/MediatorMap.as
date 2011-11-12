@@ -294,7 +294,7 @@ package org.robotlegs.base
 					{
 						injector.mapValue(claxx, viewComponent);
 					}
-					mediator = injector.instantiate(config.mediatorClass);
+					mediator = createMediatorInstance(config.mediatorClass);
 					for each (var clazz:Class in config.typedViewClasses) 
 					{
 						injector.unmap(clazz);
@@ -303,7 +303,15 @@ package org.robotlegs.base
 				}
 			}
 			return mediator;			
-		}		
+		}
+		
+		/**
+		 * Create a mediator instance
+		 */
+		protected function createMediatorInstance(mediatorClass:Class):IMediator
+		{
+			return injector.instantiate(mediatorClass);
+		}
 		
 		/**
 		 * Flex framework work-around part #5

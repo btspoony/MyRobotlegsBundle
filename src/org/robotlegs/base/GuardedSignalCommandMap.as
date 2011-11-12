@@ -80,7 +80,7 @@ public class GuardedSignalCommandMap extends SignalCommandMap implements IGuarde
         
 		var commandToInstantiate:Class = approved ? commandClass : fallbackCommandClass;
 
-        var command:Object = injector.instantiate(commandToInstantiate);
+        var command:Object = createCommandInstance(commandToInstantiate);
         unmapSignalValues(signal.valueClasses, valueObjects);
         command.execute();
 
